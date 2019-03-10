@@ -36,7 +36,7 @@ bool DST = true; //Daylight Savings Time
 long ledColor = CRGB::DarkRed; // Default clock color, can be any valid color
 long DotledColor = CRGB::Red; // Can be any valid color
 bool UseRandomColor = false; // true or false
-bool AnimateLeds = false; // Animate leds every minute
+bool AnimateLeds = true; // Animate leds every minute
 int BAUD_RATE = 9600;
 int DAY_BRIGHT = 1; // bright at night = 1, bright during day = 0
 // Random Color Table
@@ -106,7 +106,7 @@ int FIRST_DIGIT4 = NUM_LEDS - LEDS_PER_DIGIT;
 int FIRST_DIGIT3 = FIRST_DIGIT4 - LEDS_PER_DIGIT;
 int FIRST_DIGIT2 = FIRST_DIGIT3 - LEDS_PER_DIGIT - 2; // subtract 2 for dots
 int FIRST_DIGIT1 = 0;
-//int FIRST_DIGIT[4] = {FIRST_DIGIT2, FIRST_DIGIT2, FIRST_DIGIT3, FIRST_DIGIT4};
+int FIRST_DIGIT[4] = {FIRST_DIGIT2, FIRST_DIGIT2, FIRST_DIGIT3, FIRST_DIGIT4};
 int last_digit = 0;
 CRGB leds[NUM_LEDS]; // Define LEDs strip
 
@@ -149,11 +149,32 @@ int GetTime() {
   return (hour * 100 + minutes);
 };
 
+void parse_digit(int digit,int i) {
+  int iloop = i - 1;
+  int digit_location = FIRST_DIGIT[iloop];
+  Serial.print("Digit is : ");
+  Serial.print(digit);
+  Serial.print(", the array is : ");
+  for (int k = 0; k <= DIGIT_LOOP; k++) {
+    Serial.print(digits[digit][k]);
+    if (digits[digit][k] == 1) {
+      leds[digit_location] = ledColor;
+    }
+    else if (digits[digit][k] == 0) {
+      leds[digit_location] = 0x000000;
+    };
+      digit_location ++;
+  };
+}
+
 // Convert time to array needed for display
 void TimeToArray() {
   int Now = GetTime();
   int digit_location =  0;
-  // Debug output
+  if (DST) { // if DST is true then add one hour
+    Now+=100;
+    Serial.print("Added One HOUR: ");
+  };
   Serial.print("DST is: ");
   Serial.println(DST);
   Serial.print("Time is: ");
@@ -167,82 +188,78 @@ void TimeToArray() {
     leds[DOT_TWO]=0x000000;
   };
 
-  for (int i = 1; i <= 4; i++) {
-    int digit = Now % 10; // get last digit in time
-    if (i == 1) {
-      digit_location = FIRST_DIGIT4;
-      Serial.print("Digit 4 is : ");
-      Serial.print(digit);
-      Serial.print(", the array is : ");
-      for (int k = 0; k <= 27; k++) {
-        Serial.print(digits[digit][k]);
-        if (digits[digit][k] == 1) {
-          leds[digit_location] = ledColor;
-        }
-        else if (digits[digit][k] == 0) {
-          leds[digit_location] = 0x000000;
-        };
-        digit_location ++;
-      };
-      Serial.println();
+  //for (int i = 1; i <= 4; i++) {
+  int c = 1000;
+  for (int i = 4; i >= 1; i--) {
+    Serial.print("var c is: ");
+    Serial.println(c);
+    int digit = (Now / c) % 10; // get last digit in time
+    Serial.print("Now Digit: ");
+    Serial.println(digit);
+    c = c / 10;
+    Serial.print("var c CHANGED TO: ");
+    Serial.println(c);
+
+    //if (i == 1) {
+    if (i == 4) {
+      //digit_location = FIRST_DIGIT4;
+      parse_digit(digit,i);
       if (digit != last_digit && AnimateLeds) {
         fadefunction();
       }
       last_digit = digit;
     }
-    else if (i == 2) {
-      digit_location = FIRST_DIGIT3;
-      Serial.print("Digit 3 is : ");
-      Serial.print(digit);
-      Serial.print(", the array is : ");
-      for (int k = 0; k <= DIGIT_LOOP; k++) {
-        Serial.print(digits[digit][k]);
-        if (digits[digit][k] == 1) {
-          leds[digit_location] = ledColor;
-        }
-        else if (digits[digit][k] == 0) {
-          leds[digit_location] = 0x000000;
-        };
-        digit_location ++;
-      };
-      Serial.println();
-    }
+    //else if (i == 2) {
     else if (i == 3) {
-      digit_location = FIRST_DIGIT2;
-      Serial.print("Digit 2 is : ");
-      Serial.print(digit);
-      Serial.print(", the array is : ");
-      for (int k = 0; k <= DIGIT_LOOP; k++) {
-        Serial.print(digits[digit][k]);
-        if (digits[digit][k] == 1) {
-          leds[digit_location] = ledColor;
-        }
-        else if (digits[digit][k] == 0) {
-          leds[digit_location] = 0x000000;
-        };
-        digit_location ++;
-      };
-      Serial.println();
+      //digit_location = FIRST_DIGIT3;
+      parse_digit(digit,i);
     }
-    else if (i == 4) {
-      digit_location = FIRST_DIGIT1;
-      Serial.print("Digit 1 is : ");
-      Serial.print(digit);
-      Serial.print(", the array is : ");
-      for (int k = 0; k <= DIGIT_LOOP; k++) {
-        Serial.print(digits[digit][k]);
-        if (digits[digit][k] == 1) {
-          leds[digit_location] = ledColor;
-        }
-        else if (digits[digit][k] == 0) {
-          leds[digit_location] = 0x000000;
-        };
-        digit_location ++;
-      };
+    //else if (i == 3) {
+    else if (i == 2) {
+      //digit_location = FIRST_DIGIT2;
+      parse_digit(digit,i);
+    }
+    //else if (i == 4) {
+    else if (i == 1) {
+      //digit_location = FIRST_DIGIT1;
+      parse_digit(digit,i);
     };
-      Now /= 10;
+    //Now /= 10;
   };
 };
+
+void TimeAdjust() {
+  int buttonH = digitalRead(5);
+  int buttonM = digitalRead(4);
+  Serial.print("HOUR Button is : ");
+  Serial.print(buttonH);
+  Serial.print("MINUTE Button is : ");
+  Serial.print(buttonM);
+  if (buttonH == LOW || buttonM == LOW) {
+    delay(500);
+    tmElements_t Now;
+    RTC.read(Now);
+    int hour = Now.Hour;
+    int minutes = Now.Minute;
+    if (buttonH == LOW) {
+      if (Now.Hour == 24) {
+        Now.Hour = 1;
+      }
+      else {
+        Now.Hour += 1;
+      };
+    }
+  else {
+      if (Now.Minute == 59) {
+        Now.Minute = 0;
+      }
+      else {
+        Now.Minute += 1;
+      };
+    };
+    RTC.write(Now);
+  }
+}
 
 void fadeall() {
   for (int m = 0; m < NUM_LEDS; m++) {
@@ -251,11 +268,13 @@ void fadeall() {
 }
 
 void dofade(int number, int myhue) {
-  leds[number] = CHSV(myhue++, 255, 255); // Set the i'th led to red
+  leds[number] = CHSV(myhue, 255, 255); // Set the i'th led to red
   FastLED.show(); // Show the leds
   fadeall();
   delay(10); // Wait a little bit before we loop around and do it again
 }
+
+// Animate Leds every minute
 void fadefunction() {
   static uint8_t hue = 0;
   // First slide the led in one direction
@@ -264,7 +283,8 @@ void fadefunction() {
   }
   // Now go in the other direction.
   for (int i = (NUM_LEDS) - 1; i >= 0; i--) {
-    dofade(i,hue++);
+    hue ++;
+    dofade(i,hue);
   }
   if (UseRandomColor) {
     ledColor = ColorTable[random(16)];
@@ -274,7 +294,6 @@ void fadefunction() {
 // Main loop
 void loop() {
   BrightnessCheck(); // Check brightness
-  //TimeAdjust(); // Check to se if time is geting modified
   TimeToArray(); // Get leds array with required configuration
   FastLED.show(); // Display leds array
 }
