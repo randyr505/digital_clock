@@ -174,7 +174,7 @@ void TimeToArray() {
       Serial.print("Digit 4 is : ");
       Serial.print(digit);
       Serial.print(", the array is : ");
-      for (int k = 0; k <= 27; k++) {
+      for (int k = 0; k <= DIGIT_LOOP; k++) {
         Serial.print(digits[digit][k]);
         if (digits[digit][k] == 1) {
           leds[digit_location] = ledColor;
