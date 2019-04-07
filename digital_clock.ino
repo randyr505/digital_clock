@@ -37,6 +37,7 @@ long ledColor = CRGB::DarkRed; // Default clock color, can be any valid color
 long DotledColor = CRGB::Red; // Can be any valid color
 bool UseRandomColor = false; // true or false
 bool AnimateLeds = false; // Animate leds every minute
+bool Use12Hour = true; // Use 12 hour format instead of 24 hour format
 int BAUD_RATE = 9600;
 int DAY_BRIGHT = 1; // bright at night = 1, bright during day = 0
 // Random Color Table
@@ -138,6 +139,18 @@ int GetTime() {
   tmElements_t Now;
   RTC.read(Now);
   int hour = Now.Hour;
+  Serial.print("HOUR is: ");
+  Serial.println(hour);
+
+  // int now_hour = Now.Hour;
+  if ( hour > 12 ) {
+    hour = Now.Hour - 12;
+  }
+  else {
+    hour = Now.Hour;
+  }
+    Serial.print("NEW_HOUR is: ");
+    Serial.println(hour);
   int minutes = Now.Minute;
   int second = Now.Second;
   if (second % 2 == 0) {
