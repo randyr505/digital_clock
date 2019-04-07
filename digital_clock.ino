@@ -24,8 +24,8 @@
 //#define NUM_LEDS 86 // 3x7 segment, 21 x 4 digits + 2 dots
 #define LED_TYPE WS2811 // Led type, i.e. WS2812B. See more: FastLED @github
 #define COLOR_ORDER RGB // Define color order for your strip
-#define BRIGHTNESS_HIGH 90 // Define your max brightness
-#define BRIGHTNESS_LOW 60 // Define your lowest brightness
+#define BRIGHTNESS_HIGH 100 // Define your max brightness
+#define BRIGHTNESS_LOW 70 // Define your lowest brightness
 // Default brightness, i.e. BRIGHTNESS_LOW or BRIGHTNESS_HIGH
 int BRIGHTNESS = BRIGHTNESS_HIGH;
 // Change if you need to use a different ping for your led data connection
@@ -34,7 +34,7 @@ int BRIGHTNESS = BRIGHTNESS_HIGH;
 bool Dot = true;
 bool DST = true; //Daylight Savings Time
 long ledColor = CRGB::DarkRed; // Default clock color, can be any valid color
-long DotledColor = CRGB::Red; // Can be any valid color
+long DotledColor = CRGB::DarkRed; // Can be any valid color
 bool UseRandomColor = false; // true or false
 bool AnimateLeds = false; // Animate leds every minute
 bool Use12Hour = true; // Use 12 hour format instead of 24 hour format
