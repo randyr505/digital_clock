@@ -68,7 +68,7 @@ long ColorTable[16] = {
 
 // Use for 4 x 7 segments +2 for dots (114 leds)
 // 7 segments of 4 leds = 28 total leds per digit for array below
-                    //  1 2 3 4 5 6 7 8 9 10111213141516171819202122232425262728
+// 1 2 3 4 5 6 7 8 9 10111213141516171819202122232425262728
 byte digits[10][28] = {
   {0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, // Digit 0
   {0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1}, // Digit 1
@@ -84,6 +84,7 @@ byte digits[10][28] = {
 
 // Use for 3 x 7 segments +2 for dots (86 leds)
 // 7 segments of 3 leds = 21 total leds per digit for array below
+// 1 2 3 4 5 6 7 8 9 101112131415161718192021
 //byte digits[10][21] = {
   //{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, // Digit 0
   //{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1}, // Digit 1
@@ -107,7 +108,6 @@ int FIRST_DIGIT4 = NUM_LEDS - LEDS_PER_DIGIT;
 int FIRST_DIGIT3 = FIRST_DIGIT4 - LEDS_PER_DIGIT;
 int FIRST_DIGIT2 = FIRST_DIGIT3 - LEDS_PER_DIGIT - 2; // subtract 2 for dots
 int FIRST_DIGIT1 = 0;
-//int FIRST_DIGIT[4] = {FIRST_DIGIT2, FIRST_DIGIT2, FIRST_DIGIT3, FIRST_DIGIT4};
 int last_digit = 0;
 CRGB leds[NUM_LEDS]; // Define LEDs strip
 
@@ -142,7 +142,6 @@ int GetTime() {
   Serial.print("HOUR is: ");
   Serial.println(hour);
 
-  // int now_hour = Now.Hour;
   if ( hour > 12 ) {
     hour = Now.Hour - 12;
   }
@@ -287,7 +286,6 @@ void fadefunction() {
 // Main loop
 void loop() {
   BrightnessCheck(); // Check brightness
-  //TimeAdjust(); // Check to se if time is geting modified
   TimeToArray(); // Get leds array with required configuration
   FastLED.show(); // Display leds array
 }
